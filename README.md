@@ -31,27 +31,29 @@ cd font_tools
 
 After running font2image, follow these steps:
 
-- **Font Tab**
+[**Font Tab**]
 
-    1. Select `Fonts directory` and choose `Font family`, `Size`, and `Style` of font.
-    2. Set `DPI` of font or keep it to default.
-    3. Set `Hinting` type from dropdown. Switch to `Font image preview` tab to the right pane to visualize how the font will look. Most of the time `Hinting: Disabled` gives suitable result.
-    4. Change sliders of `Faus bold` and `Faux italic` to make font bold or italic.
-    5. Keep `Width` and `Height` to 100%.
+1. Select `Fonts directory` and choose `Font family`, `Size`, and `Style` of font.
+2. Set `DPI` of font or keep it to default.
+3. Set `Hinting` type from dropdown. Switch to `Font image preview` tab to the right pane to visualize how the font will look. Most of the time `Hinting: Disabled` gives suitable result.
+4. Change sliders of `Faus bold` and `Faux italic` to make font bold or italic.
+5. Keep `Width` and `Height` to 100%.
 
-- **Characters Tab**
+[**Characters Tab**]
 
-    6. Enter the characters that should be in the generated font. Keep it to default for most use cases.
+6. Enter the characters that should be in the generated font. Keep it to default for most use cases.
 
-- **Layout Tab**
+[**Layout Tab**]
 
-    7. Select `Padding` offsets. This is the sapcing between 2 characters. Recommended to keep it to default value (1).
+7. Select `Padding` offsets. This is the sapcing between 2 characters. Recommended to keep it to default value (1).
 
-- **Output Tab**
+[**Output Tab**]
 
-    8. Choose output directory. Recommended directory is [lameui_fonts](./font_tools/lameui_fonts/). But it can be any directory too.
-    9. Set file name or keep it to default (recommended).
-    10. Click on `Write Font` button. Now FontBuiler will generate a `.PNG` file and a `json` file in current directory.
+8. Choose output directory. Recommended directory is [lameui_fonts](./font_tools/lameui_fonts/). But it can be any directory too.
+9. Set file name or keep it to default (recommended).
+10. Click on `Write Font` button. Now FontBuiler will generate a `.PNG` file and a `json` file in current directory.
+
+
 
 ### Part 2: lameui_fontgen.py
 
@@ -63,7 +65,9 @@ Now follow these steps:
 
 1. Run lameui_fontgen.py with:
 
-    `python lameui_fontgen.py <font_png_file> <font_json_file> <system_icons_folder> <user_icons_folder> <C_files_output_folder>`
+    ```
+    python lameui_fontgen.py <font_png_file> <font_json_file> <system_icons_folder> <user_icons_folder> <C_files_output_folder>
+    ```
 
     - **<font_png_file>**: .PNG file created by font2image
     - **<font_json_file>**: .json file created by font2image
@@ -73,7 +77,9 @@ Now follow these steps:
 
     Example command: 
     
-    `python lameui_fontgen.py ubuntu_bold_16.PNG ubuntu_bold_16.json icons/sys_icons/ icons/usr_icons/ lameui_fonts/`
+    ```
+    python lameui_fontgen.py ubuntu_bold_16.PNG ubuntu_bold_16.json icons/sys_icons/ icons/usr_icons/ lameui_fonts/
+    ```
 2. Use generated `.c`. and `.h` font files in LameUI project by including the header and compiling the c file.
 
 That's all!!
