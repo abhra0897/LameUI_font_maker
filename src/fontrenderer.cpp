@@ -115,26 +115,8 @@ void FontRenderer::rasterize() {
             continue;
 
         FT_Int32 flags = FT_LOAD_DEFAULT;
-        if (!m_config->antialiased()) {
-            flags = flags | FT_LOAD_MONOCHROME | FT_LOAD_TARGET_MONO;
-        } else {
-            switch (m_config->antialiasing()) {
-            case FontConfig::AAliasingNormal:
-                flags |= FT_LOAD_TARGET_NORMAL;
-                break;
-            case FontConfig::AAliasingLight:
-                flags |= FT_LOAD_TARGET_LIGHT;
-                break;
-            case FontConfig::AAliasingLCDhor:
-                flags |= FT_LOAD_TARGET_LCD;
-                break;
-            case FontConfig::AAliasingLCDvert:
-                flags |= FT_LOAD_TARGET_LCD_V;
-                break;
-            default:
-                break;
-            }
-        }
+        flags = flags | FT_LOAD_MONOCHROME | FT_LOAD_TARGET_MONO;
+        
         
         switch (m_config->hinting()) {
         case  FontConfig::HintingDisable:
@@ -151,6 +133,10 @@ void FontRenderer::rasterize() {
         }
 
         error = FT_Load_Glyph( m_ft_face, glyph_index, flags );
+
+        // For testing
+        // qDebug("%c %d  %d    %d %d", ucs4chars[i], i, glyph_index, m_ft_face->glyph->metrics.width/64, m_ft_face->glyph->metrics.horiAdvance/64);
+
         if ( error )
            continue;
         if (m_config->bold()!=0) {
@@ -159,13 +145,12 @@ void FontRenderer::rasterize() {
                 FT_Outline_Embolden( &m_ft_face->glyph->outline, strength );
         }
         if (m_ft_face->glyph->format!=FT_GLYPH_FORMAT_BITMAP) {
-            error = FT_Render_Glyph( m_ft_face->glyph,
-               m_config->antialiased() ? FT_RENDER_MODE_NORMAL:FT_RENDER_MODE_MONO );
+            error = FT_Render_Glyph( m_ft_face->glyph, FT_RENDER_MODE_MONO );
         }
         if ( error )
            continue;
         if (append_bitmap(ucs4chars[i])) {
-            if (use_kerning)
+            if (use_kerning || 1)  // for testing
                 append_kerning(ucs4chars[i],&ucs4chars.front(),ucs4chars.size()-1);
         }
     }
@@ -198,7 +183,11 @@ bool FontRenderer::append_bitmap(uint symbol) {
     const FT_Bitmap* bm = &(slot->bitmap);
     int w = bm->width;
     int h = bm->rows;
-    QImage img(w,h,QImage::Format_ARGB32);
+    // For testing only -------------
+    // qDebug(" stm: %d  w: %d  adv: %d  pitch: %d\n", symbol, w, slot->advance.x/64, bm->pitch);
+    //w = slot->advance.x/64;
+    // ------------------------------
+    QImage img(w, h, QImage::Format_ARGB32);
     img.fill(0x00ffffff);
     const uchar* src = bm->buffer;
     //QColor bg = m_config->bgColor();
@@ -316,7 +305,7 @@ void FontRenderer::on_fontSizeChanged() {
     bool fixedsize = (FT_FACE_FLAG_SCALABLE & m_ft_face->face_flags ) == 0;
     int size = m_config->size();
     if (fixedsize) {
-        qDebug() << "fixed size not impemented";
+        qDebug() << "fixed size not implemented";
     } else {
         int size_x = static_cast<int>(m_config->width()*size*64.0f/100.0f);
         int size_y = static_cast<int>(m_config->height()*size*64.0f/100.0f);

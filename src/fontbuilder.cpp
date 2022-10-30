@@ -299,7 +299,7 @@ void FontBuilder::doExport(bool x2) {
         }
         if (!exporter->Write(file)) {
             QMessageBox msgBox;
-            msgBox.setText(tr("Error on save image :\n")+exporter->errorString()+"\nFile not writed.");
+            msgBox.setText(tr("Error on save image :\n")+exporter->errorString()+"\nFile not written.");
             msgBox.exec();
         }
         file.close();

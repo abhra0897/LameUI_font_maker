@@ -106,6 +106,7 @@ void OutputFrame::on_pushButtonSelectPath_clicked()
 
 void OutputFrame::onImageNameChanged(const QString& s) {
     ui->lineEditImageFilename->setText(s);
+    
 }
 
 void OutputFrame::onDescriptionNameChanged(const QString& s) {
@@ -114,7 +115,11 @@ void OutputFrame::onDescriptionNameChanged(const QString& s) {
 
 void OutputFrame::on_lineEditImageFilename_editingFinished()
 {
-    if (m_config) m_config->setImageName(ui->lineEditImageFilename->text());
+    if (m_config) 
+    {
+        m_config->setImageName(ui->lineEditImageFilename->text());
+        m_config->setDescriptionName(ui->lineEditImageFilename->text());
+    }
 }
 
 void OutputFrame::on_lineEditDescriptionFilename_editingFinished()
