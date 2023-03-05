@@ -1,3 +1,5 @@
+#! /bin/python3
+
 import json
 import os
 from PIL import Image, ImageOps
