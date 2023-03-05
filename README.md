@@ -1,5 +1,8 @@
 # LameUI Font and Bitmap Maker
-This repository is for creating fonts and image bitmaps to use with [LameUI GUI library](https://github.com/abhra0897/LameUI).
+
+### *[ To use with LameUI v1.0 ]*
+
+This repository is for creating fonts to use with [LameUI GUI library](https://github.com/abhra0897/LameUI/tree/v1.0).
 
 ## Table of contents
 - [Tools](#tools)
@@ -7,16 +10,14 @@ This repository is for creating fonts and image bitmaps to use with [LameUI GUI 
 - [Steps to create font files:](#steps-font-files)
   * [Part 1: font2image](#part-1-font2image)
   * [Part 2: lameui_fontgen.py](#part-2-fontgenpy)
-- [Steps to create image bitmap files:](#steps-bitmap-files)
 
 <a name="tools"></a>
 ## Tools
 
-It consists of three tool. First two for font generation, the 3rd one is for image to bitmap generation.
+It consists of 2 tools.
 
 1. **font2image:** This is a GUI tool written in C++. This is a modified version of https://github.com/andryblack/fontbuilder. font2image creates a `.png` image containing all the characters and a `.json` description file. These files are processed by `lameui_fontgen.py` in the next step.
 2. **lameui_fontgen.py:** This is a CLI tool written in Python. lameui_fontgen.py takes `.png` and `.json` files created by `font2image` as input and process them to create `.c`. and `.h` font files for LameUI.
-3. **lameui_bitmapgen.py:** This is a CLI tool written in Python. It takes `.png` or `.jpg` iamges as inputs and creates `.c` and `.h` file containing the bitmap. This tool is used to create image bitmaps that can be used in LameUI.
 
 <a name="requirements"></a>
 ## Requirements
@@ -99,27 +100,3 @@ Now follow these steps:
 2. Use generated `.c`. and `.h` font files in LameUI project by including the header and compiling the c file.
 
 That's all!!
-
-<a name="steps-bitmap-files"></a>
-## Steps to create image bitmap files
-
-Following steps are used to create image bitmaps for LameUI.
-
-1. Run lameui_bitmapgen.py with:
-
-    ```
-    python lameui_bitmapgen.py <input_image_file> <output_dir> <output_bpp>
-    ```
-
-    - **<input_image_file>**: .png/.jpg/.jpeg image file
-    - **<output_dir>**: folder where output .c/.h files are stored.
-    - **<output_bpp>**: bpp is bits-per-pixel. It sets how many bits will be in per pixel of the output bitmap. Supported values are 1 (monochrome), 8 (grayscale), 16 (RGB565 color). Lower bpp makes smaller image size. 
-
-        For example, if the image is a simple wifi icon, bpp=1 is enough. Using 16 bpp will be wasteful.
-
-    Example command:
-
-    ```
-    python lameui_bitmapgen.py sunset_hill.jpg out/ 16
-    ```
-2. Use generated `.c` and `.h` image bitmap files in LameUI project by including the header and compiling the c file.
