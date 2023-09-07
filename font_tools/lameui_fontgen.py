@@ -64,7 +64,7 @@ def rgba_to_monochrome(rgba_im):
     mono_im.paste(rgba_im, mask=rgba_im.split()[3]) # 3 is the alpha channel
     return mono_im
 
-valid_icon_files = []   # [{'id': png_id, 'path': icon_path, 'width': width, 'x_offset': offset}, ...]
+valid_icon_files = []   # [{'id': png_id, 'path': icon_path, 'width': width, 'x_pos': position in x}, ...]
 def combine_font_and_icons(font_png_path, sys_icons_dir, usr_icons_dir):
     font_image = Image.open(font_png_path)
     font_image = rgba_to_monochrome(font_image)
@@ -103,7 +103,7 @@ def combine_font_and_icons(font_png_path, sys_icons_dir, usr_icons_dir):
                 icon_img = Image.open(icon_path)
                 if (icon_img.mode == "RGBA"):
                     print("File: %s is valid.. ID: %d" % (icon_name, png_id))
-                    valid_icon_files.append({'id': png_id, 'path': icon_path, 'width': 0, 'x_offset': 0}) # append id and path. Keep width and x_offset as 0
+                    valid_icon_files.append({'id': png_id, 'path': icon_path, 'width': 0, 'x_pos': 0}) # append id and path. Keep width and x_pos as 0
                 else:
                     print("File: %s has unsupported color mode: %s, Only RGBA allowed.. Skipping.." % (icon_name, icon_img.mode))
 
@@ -115,15 +115,15 @@ def combine_font_and_icons(font_png_path, sys_icons_dir, usr_icons_dir):
         height_percent = (font_texture_height / float(icon_img.height))
         icon_new_width = int((float(icon_img.width) * float(height_percent)))
         icon['width'] = icon_new_width
-        icon['x_offset'] = total_width
+        icon['x_pos'] = total_width
         total_width += icon_new_width
     
     # print(valid_icon_files)
 
     combined_image = Image.new('1', (total_width, font_texture_height))
-    x_offset = 0
-    combined_image.paste(font_image, (x_offset, 0))
-    x_offset += font_image.width
+    x_pos = 0
+    combined_image.paste(font_image, (x_pos, 0))
+    x_pos += font_image.width
     for icon in valid_icon_files:
         icon_img = Image.open(icon['path'])
         # Sequence of steps for best result:
@@ -131,8 +131,8 @@ def combine_font_and_icons(font_png_path, sys_icons_dir, usr_icons_dir):
         icon_img = rgba_invert(icon_img)
         icon_img = rgba_to_monochrome(icon_img)
         icon_img = icon_img.resize((icon['width'], font_texture_height))
-        combined_image.paste(icon_img, (x_offset,0))
-        x_offset += icon_img.width
+        combined_image.paste(icon_img, (x_pos,0))
+        x_pos += icon_img.width
 
     combined_image.show()
     return combined_image
@@ -199,7 +199,7 @@ def make_font_description(file_path):
     counter = 0
     for g in input_description['symbols']:
         index_offset = bytes_per_col * int(g['x'])
-        output_data += '{ .character=%d/*%c*/, .width=%d, .payload_index=%d }, ' % (g['id'], chr(g['id']), g['width'], index_offset)
+        output_data += '{ .character=%d/*%c*/, .width=%d, .x_adv=%d, .x_off=%d, .payload_index=%d }, ' % (g['id'], chr(g['id']), g['width'], g['xadvance'], g['xoffset'], index_offset)
         if (counter & 1):
             output_data += '\n'
         else:
@@ -208,8 +208,8 @@ def make_font_description(file_path):
     output_data += '\n'
 
     for icon in valid_icon_files:
-        index_offset = bytes_per_col * icon['x_offset']
-        output_data += '{ .character=%d/*%s*/, .width=%d, .payload_index=%d }, ' % (icon['id'], os.path.basename(icon['path']), icon['width'], index_offset)
+        index = bytes_per_col * icon['x_pos']
+        output_data += '{ .character=%d/*%s*/, .width=%d, .x_adv=%d, .x_off=%d, .payload_index=%d }, ' % (icon['id'], os.path.basename(icon['path']), icon['width'], icon['width'], 0, index)
         if (counter & 1):
             output_data += '\n'
         else:

@@ -41,6 +41,8 @@
 
 #include <math.h>
 
+#include <freetype/ftglyph.h>
+
 FontRenderer::FontRenderer(QObject *parent,const FontConfig* config) :
     QObject(parent), m_config(config)
 {
@@ -135,7 +137,13 @@ void FontRenderer::rasterize() {
         error = FT_Load_Glyph( m_ft_face, glyph_index, flags );
 
         // For testing
-        // qDebug("%c %d  %d    %d %d", ucs4chars[i], i, glyph_index, m_ft_face->glyph->metrics.width/64, m_ft_face->glyph->metrics.horiAdvance/64);
+//         FT_Glyph  glyph;
+//         error = FT_Get_Glyph( m_ft_face->glyph, &glyph );
+//         FT_BBox  bbox;
+//         FT_Glyph_Get_CBox( glyph, FT_GLYPH_BBOX_PIXELS, &bbox );
+//         int bb_width  = bbox.xMax - bbox.xMin;
+//         int bb_height = bbox.yMax - bbox.yMin;
+//         qDebug("[%d] %c  %d    w: %d  ha: %d  bb_w: %d",  i, ucs4chars[i], glyph_index, m_ft_face->glyph->metrics.width/64, m_ft_face->glyph->metrics.horiAdvance/64, bb_width);
 
         if ( error )
            continue;
@@ -150,7 +158,7 @@ void FontRenderer::rasterize() {
         if ( error )
            continue;
         if (append_bitmap(ucs4chars[i])) {
-            if (use_kerning || 1)  // for testing
+            if (use_kerning)  // for testing
                 append_kerning(ucs4chars[i],&ucs4chars.front(),ucs4chars.size()-1);
         }
     }
@@ -185,7 +193,7 @@ bool FontRenderer::append_bitmap(uint symbol) {
     int h = bm->rows;
     // For testing only -------------
     // qDebug(" stm: %d  w: %d  adv: %d  pitch: %d\n", symbol, w, slot->advance.x/64, bm->pitch);
-    //w = slot->advance.x/64;
+    // w = slot->advance.x/64;
     // ------------------------------
     QImage img(w, h, QImage::Format_ARGB32);
     img.fill(0x00ffffff);
@@ -198,8 +206,7 @@ bool FontRenderer::append_bitmap(uint symbol) {
             for (int col=0;col<w;col++) {
                  {
                     uchar s = src[col];
-                    *dst = qRgba(0xff,0xff,0xff,
-                            s);
+                    *dst = qRgba(0xff,0xff,0xff,s);
                 }
                 dst++;
             }
@@ -240,9 +247,20 @@ bool FontRenderer::append_bitmap(uint symbol) {
         }
     }
 
+    // For testing
+//     FT_Glyph  glyph;
+//     FT_Get_Glyph( slot, &glyph );
+//     FT_BBox  bbox;
+//     FT_Glyph_Get_CBox( glyph, FT_GLYPH_BBOX_PIXELS, &bbox );
+//     int bb_width  = bbox.xMax - bbox.xMin;
+//     int bb_height = bbox.yMax - bbox.yMin;
+
     m_rendered.chars[symbol]=RenderedChar(symbol,slot->bitmap_left,slot->bitmap_top,slot->advance.x/64,img);
     m_chars.push_back(LayoutChar(symbol,slot->bitmap_left,-slot->bitmap_top,w,h));
-
+    // For testing
+//     m_rendered.chars[symbol]=RenderedChar(symbol,0,slot->bitmap_top,slot->advance.x/64,img);
+//     m_chars.push_back(LayoutChar(symbol,slot->metrics.horiBearingX/64,-slot->bitmap_top,slot->advance.x/64,h));
+    qDebug("[%d] bearingX: %d, adv: %d, left: %d, width: %d", symbol, slot->metrics.horiBearingX/64, slot->advance.x/64, slot->bitmap_left, w);
     return true;
 }
 
